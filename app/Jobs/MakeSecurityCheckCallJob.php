@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Models\Guard;
+use App\Models\SecurityGuard;
 use App\Models\Checkin;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
- 
+
 class MakeSecurityCheckCallJob implements ShouldQueue
 {
     use Queueable;
@@ -26,7 +26,7 @@ class MakeSecurityCheckCallJob implements ShouldQueue
      */
     public function handle(): void
     {
-        foreach(Guard::where('is_active', true)->get() as $guard) {
+        foreach(SecurityGuard::where('is_active', true)->get() as $guard) {
             $checkin = Checkin::create([
                 'guard_id' => $guard->id,
                 'status' => \App\Enums\CheckinStatus::CALLED_PENDING,

@@ -12,8 +12,8 @@ class Checkin extends Model
         'status' => \App\Enums\CheckinStatus::class,
     ];
 
-    public function guard(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function security_guard(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Guard::class);
+        return $this->belongsTo(SecurityGuard::class);
     }
 }
