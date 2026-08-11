@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new MakeSecurityCheckCallJob())->hourly()->withoutOverlapping();
+#Schedule::job(new MakeSecurityCheckCallJob())->hourly()->withoutOverlapping();
