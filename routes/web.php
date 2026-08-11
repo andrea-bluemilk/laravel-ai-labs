@@ -45,20 +45,6 @@ Route::get('/.well-known/ucp', function () {
 
 Route::get('/ucp-feed/feed.xml', [\App\Http\Controllers\UcpFeedController::class, 'generateFeed']);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ROUTES PER TEST AI AGENT
 Route::get('/chat', function () {
     $rawHistory = ChatMessage::where('session_id', CHAT_SESSION_ID)

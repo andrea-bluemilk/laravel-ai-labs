@@ -39,4 +39,9 @@ return [
         'public_key' => env('UCP_PUBLIC_KEY'),
     ],
 
+    'vapi' => [
+        'api_key' => env('VAPI_API_KEY'),
+        'phone_number_id' => env('VAPI_PHONE_NUMBER_ID'),
+    ],
+
 ];

@@ -7,7 +7,8 @@ use App\Models\Checkin;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Log;
+ 
 class MakeSecurityCheckCallJob implements ShouldQueue
 {
     use Queueable;
@@ -56,6 +57,8 @@ class MakeSecurityCheckCallJob implements ShouldQueue
                     ],
                 ]
             ]);
+
+            Log::info("Chiamata di controllo di sicurezza effettuata per la guardia {$guard->name} ({$guard->phone_number}). Risposta VAPI: " . $response->body());
         }
     }
 }

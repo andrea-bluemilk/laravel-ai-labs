@@ -12,7 +12,7 @@ class VapiController extends Controller
     public function handleWebhook(Request $request)
     {
         $payload = $request->all();
-
+        Log::info('Received webhook payload: ', $payload);
         if($payload['message']['type'] === 'end-of-call-report') {
             $checkinId = $payload['message']['customer']['metadata']['checkin_id'] ?? null;
             if(!$checkinId) {
@@ -29,7 +29,7 @@ class VapiController extends Controller
                 $this->triggerAlert($checkin, 'Mancata risposta / Segreteria');
             } else {
                 $status = $request->input('message.analysis.structuredData.checkin_status');
-                if ($status === 'OK') {
+                if ($status == true) {
                     $checkin->status = \App\Enums\CheckinStatus::COMPLETED_OK;
                     $checkin->response_text = $transcript;
                     $checkin->save();
