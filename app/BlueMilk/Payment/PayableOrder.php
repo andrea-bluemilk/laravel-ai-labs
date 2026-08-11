@@ -1,0 +1,48 @@
+<?php
+
+namespace App\BlueMilk\Payment;
+
+interface PayableOrder
+{
+    /**
+     * @return string
+     */
+    public function getPaymentOrderId();
+
+    /**
+     * Should be in eurocents for most payments providers.
+     *
+     * @return float
+     */
+    public function getPaymentAmount();
+
+    /**
+     * @return string
+     */
+    public function getPaymentDescription();
+
+    /**
+     * @return string
+     */
+    public function getCustomerEmail();
+
+    /**
+     * @return string
+     */
+    public function getCustomerName();
+
+    /**
+     * @param string
+     */
+    public function setPaymentUid($payment_id): PayableOrder;
+
+    /**
+     * @return string
+     */
+    public function getCustomerLanguage();
+
+    /**
+     * @return string
+     */
+    public function getPaymentUid();
+}
