@@ -35,6 +35,7 @@ class MakeSecurityCheckCallJob implements ShouldQueue
 
             $response = Http::withToken(config('services.vapi.api_key'))->post('https://api.vapi.ai/call/phone', [
                 'phoneNumberId' => config('services.vapi.phone_number_id'),
+                'assistantId' => config('services.vapi.assistant_id'),
                 'customer' => [
                     'name' => $guard->name,
                     'number' => $guard->phone_number,
@@ -42,19 +43,6 @@ class MakeSecurityCheckCallJob implements ShouldQueue
                 'metadata' => [
                     'checkin_id' => $checkin->id,
                     'guard_id' => $guard->id,
-                ],
-                'firstMessage' => [
-                    'text' => 'Chiamata di controllo di sicurezza. Per favore conferma che è tutto a posto dicendo "tutto bene" oppure premendo il tasto 1.',
-                ],
-                'assistant' => [
-                    'model' => [
-                        'provider' => 'openai',
-                        'model' => 'gpt-4o-mini',
-                    ],
-                    'voice' => [
-                        'provider' => 'elevenlabs',
-                        'voiceId' => 'id_voce_italiana_naturale',
-                    ],
                 ]
             ]);
 

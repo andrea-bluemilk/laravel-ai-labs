@@ -42,6 +42,7 @@ return [
     'vapi' => [
         'api_key' => env('VAPI_API_KEY'),
         'phone_number_id' => env('VAPI_PHONE_NUMBER_ID'),
+        'assistant_id' => env('VAPI_ASSISTANT_ID'),
     ],
 
 ];
