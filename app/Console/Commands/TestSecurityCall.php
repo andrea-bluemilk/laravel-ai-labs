@@ -25,7 +25,7 @@ class TestSecurityCall extends Command
         $guard = SecurityGuard::where('is_active', true)->first();
 
         $checkin = Checkin::create([
-                'guard_id' => $guard->id,
+                'security_guard_id' => $guard->id,
                 'status' => \App\Enums\CheckinStatus::CALLED_PENDING,
                 'called_at' => now(),
             ]);
@@ -39,7 +39,7 @@ class TestSecurityCall extends Command
                 ],
                 'metadata' => [
                     'checkin_id' => $checkin->id,
-                    'guard_id' => $guard->id,
+                    'security_guard_id' => $guard->id,
                 ]
             ]);
 

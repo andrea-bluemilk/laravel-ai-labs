@@ -28,7 +28,7 @@ class MakeSecurityCheckCallJob implements ShouldQueue
     {
         foreach(SecurityGuard::where('is_active', true)->get() as $guard) {
             $checkin = Checkin::create([
-                'guard_id' => $guard->id,
+                'security_guard_id' => $guard->id,
                 'status' => \App\Enums\CheckinStatus::CALLED_PENDING,
                 'called_at' => now(),
             ]);
@@ -42,7 +42,7 @@ class MakeSecurityCheckCallJob implements ShouldQueue
                 ],
                 'metadata' => [
                     'checkin_id' => $checkin->id,
-                    'guard_id' => $guard->id,
+                    'security_guard_id' => $guard->id,
                 ]
             ]);
 

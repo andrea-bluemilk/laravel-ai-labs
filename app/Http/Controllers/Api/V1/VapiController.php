@@ -68,6 +68,6 @@ class VapiController extends Controller
     private function triggerAlert(Checkin $checkin, string $reason)
     {
         // Log the alert for now. You can replace this with actual alerting logic (e.g., sending an email or notification).
-        Log::alert("Controllo di sicurezza per la guardia {$checkin->security_guard->name} delle ore {$checkin->called_at} fallito: {$reason}");
+        Log::alert("Controllo di sicurezza per la guardia {$checkin->security_guard?->name} delle ore {$checkin->called_at} fallito: {$reason}");
     }
 }
