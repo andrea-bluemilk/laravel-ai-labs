@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\CheckinStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Checkin;
+use App\Mail\AlertMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -169,5 +171,6 @@ class VapiController extends Controller
     private function triggerAlert(Checkin $checkin, string $reason): void
     {
         Log::alert("Controllo di sicurezza per la guardia {$checkin->security_guard?->name} delle ore {$checkin->called_at} fallito: {$reason}");
+        Mail::to('nicola.nugnes@mondialpol.it')->send(new AlertMail($checkin, $reason)); 
     }
 }
