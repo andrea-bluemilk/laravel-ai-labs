@@ -1,49 +1,51 @@
 <?php
 
+use App\Http\Controllers\CatalogueController;
+use App\Http\Controllers\UcpFeedController;
+use App\Models\ChatMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Http\Request;
-use App\Models\ChatMessage;
-use Prism\Prism\Facades\Prism;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Facades\Prism;
 use Prism\Prism\Facades\Tool;
-use Prism\Prism\ValueObjects\Messages\UserMessage;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
+use Prism\Prism\ValueObjects\Messages\UserMessage;
 
 // Identificativo della chat corrente (per ora fisso) - potrebbe essere user_id, session_id, o qualsiasi altro identificatore univoco per la conversazione
-const CHAT_SESSION_ID = 'chat-locale';
+defined('CHAT_SESSION_ID') || define('CHAT_SESSION_ID', 'chat-locale');
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 // ROUTES PER TEST UCP
-Route::get('prodotto/{product}', [\App\Http\Controllers\CatalogueController::class, 'show'])->name('catalogue.show');
+Route::get('prodotto/{product}', [CatalogueController::class, 'show'])->name('catalogue.show');
 
 Route::get('/.well-known/ucp', function () {
     return response()->json([
-        "spec_version" => "2026-01-23",
-        "merchant_name" => config('app.name'),
-        "capabilities" => [
-            "shopping.checkout" => [
-                "transport" => "REST",
-                "url" => url('/api/v1/ucp/checkout')
-            ]
+        'spec_version' => '2026-01-23',
+        'merchant_name' => config('app.name'),
+        'capabilities' => [
+            'shopping.checkout' => [
+                'transport' => 'REST',
+                'url' => url('/api/v1/ucp/checkout'),
+            ],
         ],
-        "payment_handlers" => [
+        'payment_handlers' => [
             [
-                "type" => "stripe_payment_element",
-                "merchant_id" => config('payment.gateways.stripe.options.sandbox.public_key')
+                'type' => 'stripe_payment_element',
+                'merchant_id' => config('payment.gateways.stripe.options.sandbox.public_key'),
             ],
             [
-                "type" => "paypal_wallet",
-                "merchant_id" => config('payment.gateways.paypal.options.sandbox.client_id')
-            ]
-        ]
+                'type' => 'paypal_wallet',
+                'merchant_id' => config('payment.gateways.paypal.options.sandbox.client_id'),
+            ],
+        ],
     ]);
 });
 
-Route::get('/ucp-feed/feed.xml', [\App\Http\Controllers\UcpFeedController::class, 'generateFeed']);
+Route::get('/ucp-feed/feed.xml', [UcpFeedController::class, 'generateFeed']);
 
 // ROUTES PER TEST AI AGENT
 Route::get('/chat', function () {
@@ -87,7 +89,6 @@ Route::post('/chat/invia', function (Request $request) {
         ->orderBy('created_at', 'asc')
         ->get();
 
-
     // Generiamo la risposta passando TUTTA la cronologia a Qwen
     $prismMessages = [];
     foreach ($rawHistory as $msg) {
@@ -116,46 +117,46 @@ Route::post('/chat/invia', function (Request $request) {
 
 Route::get('/chat/reset', function () {
     ChatMessage::where('session_id', CHAT_SESSION_ID)->delete();
+
     return redirect('/chat');
 });
 
 Route::get('/ai-agent', function () {
     $tool = Tool::as('controlla_disponibilita_prodotto')
-    ->for('Usa questo strumento per verificare quanti pezzi di un determinato prodotto sono rimasti in magazzino.')
-    ->withStringParameter('prodotto', 'Il nome del prodotto da cercare (es. iphone, scarpe, maglietta)')
-    ->using(function (string $prodotto) :string {
+        ->for('Usa questo strumento per verificare quanti pezzi di un determinato prodotto sono rimasti in magazzino.')
+        ->withStringParameter('prodotto', 'Il nome del prodotto da cercare (es. iphone, scarpe, maglietta)')
+        ->using(function (string $prodotto): string {
             $magazzino = [
                 'iphone' => 5,
                 'scarpe' => 0,
-                'maglietta' => 20
+                'maglietta' => 20,
             ];
 
             $prodottoPulito = strtolower($prodotto);
-            if(array_key_exists($prodottoPulito, $magazzino)) {
-                return "Il prodotto '{$prodotto}' ha una disponibilità di: " . $magazzino[$prodottoPulito] . " pezzi.";
+            if (array_key_exists($prodottoPulito, $magazzino)) {
+                return "Il prodotto '{$prodotto}' ha una disponibilità di: ".$magazzino[$prodottoPulito].' pezzi.';
             }
 
             return "Il prodotto '{$prodotto}' non esiste a sistema.";
         });
 
-
     $response = Prism::text()
-    ->using(Provider::Ollama, 'qwen3:8b')
-    ->withSystemPrompt('Sei un assistente del magazzino. Sii cordiale e usa gli strumenti a tua disposizione per rispondere alle domande.')
-    ->withPrompt('Ciao! Un cliente mi chiede se abbiamo ancora delle scarpe in deposito e quante magliette ci sono.')
-    ->withTools([$tool])
-    ->withMaxSteps(3)
-    ->generate();
+        ->using(Provider::Ollama, 'qwen3:8b')
+        ->withSystemPrompt('Sei un assistente del magazzino. Sii cordiale e usa gli strumenti a tua disposizione per rispondere alle domande.')
+        ->withPrompt('Ciao! Un cliente mi chiede se abbiamo ancora delle scarpe in deposito e quante magliette ci sono.')
+        ->withTools([$tool])
+        ->withMaxSteps(3)
+        ->generate();
 
     return response($response->text, 200);
 });
 
 Route::get('/ai-test', function () {
     $response = Prism::text()
-    ->using(Provider::Ollama, 'qwen3:8b')
-    ->withSystemPrompt('Sei un assistente che estrae dati. Rispondi SEMPRE e SOLO in formato JSON.')
-    ->withPrompt('Estrai i prodotti e le quantità da questo testo: "Vorrei prenotare tre pizze margherita, due birre medie e una coca zero grazie!"')
-    ->generate();
+        ->using(Provider::Ollama, 'qwen3:8b')
+        ->withSystemPrompt('Sei un assistente che estrae dati. Rispondi SEMPRE e SOLO in formato JSON.')
+        ->withPrompt('Estrai i prodotti e le quantità da questo testo: "Vorrei prenotare tre pizze margherita, due birre medie e una coca zero grazie!"')
+        ->generate();
 
     return response($response->text, 200)
         ->header('Content-Type', 'application/json');
